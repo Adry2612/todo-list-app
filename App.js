@@ -1,25 +1,47 @@
+import {useState} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
 import Task from './components/Task';
 
 export default function App() {
+	const [task, setTask] = useState()
+	const [allTasks, setAllTasks] = useState([]);
+
+	const handlePress = () => {
+		setAllTasks([...allTasks, task]);
+	}
+
+	const handleDelete = (index) => {
+		let taskCopy = [...allTasks];
+		taskCopy.splice(index, 1);
+		setAllTasks(taskCopy);
+	}
+
+	console.log(allTasks)
   return (
 	<View style={styles.container}>
 
 	  <View style={styles.textContainer}>
 		<Text style={styles.mainTitle}> Tareas de hoy </Text>
 		<View style={styles.tasksContainer}>
-		  <Task nombre={"Esto es la tarea 1"}/>
-		  <Task nombre={"Esto es la tarea 2"}/>
-		  <Task nombre={"Esto es la tarea 3"}/>
+		{ 
+			allTasks.map((task, index) => {
+			  return (
+				<TouchableOpacity key={index} onPress={() => handleDelete(index)}>
+			  		<Task nombre={task} />
+			  	</TouchableOpacity>
+			  )
+		  	})
+		}
+
 		</View>
 	  </View>
 
 	  {/* Este componente se utiliza para que cuando se abra el teclado el contenido de la app se desplace hacia arriba */}
 	  {/* El behavior es diferente dependiendo del so del dispositivo. */}
 	  <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-		<TextInput style={styles.input} placeholder={'Hola que tal'}></TextInput>
-		<TouchableOpacity style={styles.touch}> 
+		<TextInput style={styles.input} placeholder={'Hola que tal'} onChangeText={text => setTask(text)}></TextInput>
+		<TouchableOpacity style={styles.touch} onPress={handlePress}> 
 		  <Text style={styles.simbolo}> + </Text>
 		</TouchableOpacity>
 	  </KeyboardAvoidingView>
@@ -54,13 +76,14 @@ const styles = StyleSheet.create({
 	alignItems: 'center',
 	alignItems: 'center',
 	position: 'absolute',
+	width: '100%',
 	bottom: 60,
 	marginHorizontal: 10,
   },
 
   input: {
 	backgroundColor: 'white',
-	width: '80%',
+	width: 250,
 	paddingVertical: 20,
 	paddingHorizontal: 10,
 	borderRadius: 10,
@@ -85,7 +108,6 @@ const styles = StyleSheet.create({
 	},
 	shadowOpacity: 0.34,
 	shadowRadius: 6.27,
-
 	elevation: 10,
   },
 
